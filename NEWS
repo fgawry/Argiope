@@ -1,0 +1,22 @@
+Version 0.5.1
+Included AI image calibration and data extraction.
+Removed imageJ template colorchecker calibration.
+dcraw now imports raw files without camera white balance
+Added function to padding and resize photos for AI
+
+Version 0.4.7
+Removed velox.
+Added function to find most common pixels.
+
+Version 0.4.6
+Added crop to image processing.
+
+Version 0.4.4
+Fixed bug in portrait images.
+
+Version 0.4.3
+Added arguments to allow user to interactivelly provide postion of colorchecker targets.
+
+Version 0.4.2
+Removed dcraw for the mac version. User needs to install it via homebrew (https://brewinstall.org/install-dcraw-on-mac-with-brew/)
+Added arguments to allow user to provide postion of colorchecker without template matching in fiji.

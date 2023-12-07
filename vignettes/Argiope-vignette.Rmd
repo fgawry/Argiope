@@ -1,0 +1,91 @@
+---
+title: "Manual para Analise das Fotos"
+author: "Felipe M. Gawryszewski"
+date: "`r Sys.Date()`"
+output:
+  html_vignette:
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    fig_caption: false
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Manual para Analise das Fotos}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+A processo para a análise das fotos pode ser dividido em duas partes:  
+  * Na primeira, as fotos são convertidas para valores padronizados com base nos valores de referência do colourchecker.  
+  * Na segunda, a coleta dos dados de interesse extraídos das fotos que foram convertidas.  
+
+## Primeira parte - *conversão das fotos*  
+Pode ser feita com Inteligência Artificial ou de forma Interativa no próprio R. Detalhamento em breve.
+
+#### Instalação do pacote Argiope no R.
+Instale o *R* (https://cran.fiocruz.br) e o RStudio (https://rstudio.com/products/rstudio/download/) no seu computador. Abra o *RStudio* e instale os pacotes que serão utilizados pelo pacote *Argiope*:
+```{r echo=TRUE}
+#install.packages(c("jpeg", "png", "keras", "ff", "ijtiff", "velox", "raster", "tcltk", "mapview", "mapedit", "shiny", "leaflet.extras", "miniUI"))
+```
+
+#### Instalação do dcraw (MacOS apenas)
+Se você usa um mac, deve instalar o dcraw para ler as fotos em formato raw.
+Siga as instruções em https://brewinstall.org/install-dcraw-on-mac-with-brew/.
+  
+#### Conversão e verificação das fotos
+Em segudia as fotos são convertidas no R utilizando o pacote *Argiope*. Aqui um exemplo com 12 fotos representando um total de três folhas diferentes. Folha foi fotografada na vista abaxial e adaxial. Cada vista foi fotografada 3x, com graus de exposição diferentes usando a função Bracketing da máquina fotográfica.  
+
+##### *procphotos*
+Na função *procphotos* devem ser colocados of valores esperados de reflectância para cada item da escalda de cinza, começando pelo branco (RvaluesR, RvaluesG, RvaluesB). Já há valores padronizados como default, mas em alguns casos pode ser necessário mudá-los. Também é importante dizer quais valores da escala de cinza devem ser usados para converter a foto (*whichRvalues*). Na maior parte dos casos os item que analisamos são bem mais escuros do que o branco da escala de cinza. Nesses casos é melhor fazer a estimativa dos valores com uma foto com muita luz. Nesse caso há três repetições de cada item e a melhor foto será escolhida automaticamente (auto = TRUE),
+com o critério da foto com o primeiro cinza com maior intensidade, desde que menor ou igual a 80% do máximo (limit = 0.8). Veja *?procphotos* para detalhes dos outros argumentos da função.  
+  
+Os valores de referência a serem usados são os seguintes:  
+Câmera Canon, reflectância medida usando o Teflon da OceanOptics:  
+RvaluesR = 98.35, 65.22, 41.42, 23.17, 9.97, 2.17  
+RvaluesG = 97.89, 66.19, 42.45, 23.69, 10.48, 2.22  
+RvaluesB = 95.98, 66.87, 43.30, 24.42, 11.13, 2.26  
+  
+Câmera Canon, reflectância medida usando o BaSO4:  
+RvaluesR = 95.93, 62.86, 40.28, 22.75, 9.89, 2.64  
+RvaluesG = 95.64, 63.87, 41.34, 23.25, 10.33, 2.64  
+RvaluesB = 93.69, 64.53, 42.22, 24.04, 10.93, 2.66  
+  
+Outras Câmeras, reflectância medida usando o Teflon da OceanOptics:  
+RvaluesR = 98.27, 65.21, 41.42, 23.17, 9.98, 2.17  
+RvaluesG = 97.88, 66.19, 42.47, 23.69, 10.49, 2.23  
+RvaluesB = 95.80, 66.84, 43.28, 24.42, 11.14, 2.26  
+  
+Outras Câmeras, reflectância medida usando o BaSO4:  
+RvaluesR = 95.83, 62.85, 40.28, 22.76, 9.90, 2.64  
+RvaluesG = 95.63, 63.87, 41.36, 23.25, 10.33, 2.63  
+RvaluesB = 93.51, 64.49, 42.2, 24.05, 10.95, 2.66  
+  
+Outra opção muito importante é o 'save'. Se save=TRUE, serão salvas fotos convertidas em uma pasta results. Isso é bom, mas cada foto ocupa muito espaço de HD (290 mb) e portanto pode ser impossível em alguns computadores. Se save=FALSE, as fotos não são salvas, apenas o arquivo .rds contendo as informações de como converter as fotos.
+
+## Segunda parte - *coleta dos dados usando AI*
+Em breve
+
+## Segunda parte - *coleta dos dados de forma interativa*
+Nessa etapa o usuário irá visualizar as fotos convertidas na etapa anterior e selecionar a(s) área(s) de interesse. Essa área de interesse será extraída da foto e salva em um arquivo separado. Nesse etapa também ocorre a associação da foto com o arquivo do espectrofotômetro (se houver).
+
+É feita a partir da função *getPhotoData* do pacote *Argiope*.  
+
+Indique onde estão as fotos pelo argumento path. Note que se na etapa anterior você não salvou as fotos convertidas (*save=FALSE*), as fotos aqui são as fotos no formato RAW. Se na etapa anterior você usou *save=TRUE*, as fotos são as fotos *.tif* convertidas. Nesse caso são as fotos convertidas que estão nas pasta results.  
+
+Indique também a localização dos arquivos do espectrofotômetro, caso existam.  
+
+Indique quais arquivos que você deseja analisar. Se forem todos da pasta results, use *list.files(path = files.path, pattern = ".tif")*. Porém, se as fotos convertidas na etapa anterior não foram salvas  (*save=FALSE*), as imagens são as que estão listadas no arquivo da etapa anterior. Nesse caso use *names(photos$scale)*.
+  
+Além disso, é possível selecionar um fator (*factor = 10*) para reduzir a imagem visualizada. Isso economiza memória e tempo, mas piora a definição da imagem. E também uma porcentagem de corte das bordas da imagem (*crop = 10*; corta 10% da imagem). Isso pode ser útil quando é preciso uma boa definição (e.g. *factor = 3*), mas queremos deixar a imagem pequena e pegar apenas o centro, como no caso da análise dos artrópodes coletados.  
+
+Por fim, modificando os argumentos item.location e item.types é possível modificar as listas que aparecem para ser selecionadas durante a execução da função.
+
+Após algum tempo de processamento você poderá selecionar a área que quer extrair os dados. Selecione uma de cada vez.
+
+Em seguida, uma série de caixas de diálogo te ajudarão a completar os dados referente a área selecionada.
+No final você será perguntado se deseja extrair mais algum dado da mesma foto. Em caso negativo a próxima foto é carregada e o ciclo de reinicia.
+
+É um processo cansativo e demorado. Faça-o com calma e quando estiver descansado para não cometer erros.
+
+Além das fotos das áreas de interesse, uma tabela com todos os dados extraídos também é salva.
+

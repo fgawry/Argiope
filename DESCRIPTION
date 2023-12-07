@@ -1,0 +1,14 @@
+Package: Argiope
+Type: Package
+Title: Image colour standardisation and data extraction.
+Version: 0.5.1
+Author: Felipe M. Gawryszewkski
+Maintainer: Felipe M. Gawryszewkski <felipe@unb.br>
+Description: Converts image to standardised RGB values based on a knwon grey scale. Use AI to standardise images and extract colorimetric data.
+License: GPL-2
+Imports: graphics, stats, ff, jpeg, png, ijtiff, gdalUtilities, raster, tcltk, mapview, mapedit, shiny, leaflet.extras, miniUI, leafem, leaflet, grDevices, ks, keras, terra
+Suggests: knitr, rmarkdown, MCMCglmm, sf, sp, magick
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+VignetteBuilder: rmarkdown

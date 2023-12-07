@@ -1,0 +1,512 @@
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 80,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+photos<-procphotos(auto = T,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 80,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+#1.4 Rodar a fun??o para converter as imagens
+photos<-procphotos(auto = T,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = TRUE,
+roi = imagej,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+getwd()
+setwd("~/Felipe/Duvida Natalia")
+dir()
+imagej<-read.csv("Results.csv")
+head(imagej)
+#1.2.Carregar o pacote Argiope.
+library(Argiope)
+old<-getwd()
+Argiope.path<-file.path(find.package("Argiope"),"dcraw")
+Argiope.path
+setwd(file.path(find.package("Argiope")))
+getwd()
+dir()
+head(imagej)
+files<-"IMG_1826.CR2"
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[1]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[1]]))), stdout = TRUE)
+exif
+exif.new<-data.frame(matrix(ncol=length(exif),nrow=length(files)))
+for (k in 1:length(files)) {
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[k]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[k]]))), stdout = TRUE)
+for(i in 1:length(exif)) {
+size<-length(unlist(strsplit(exif[[i]],split=": ")))
+if(size>1) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))[[2]]
+names(exif.new)[[i]]<-paste(unlist(strsplit(exif[[i]],split=": "))[[1]])
+}
+if(size==1 & size) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))
+}
+if(size==0 & size) {
+}
+}
+}
+dates<-exif.new$Timestamp
+dates<-strsplit(x=dates, split=" ")
+month<-function(month) {
+#vai errar o dia em ano bissexto
+if (month=="Jan") {number<-0}
+if (month=="Feb") {number<-31}
+if (month=="Mar") {number<-31+28}
+if (month=="Apr") {number<-31+28+31}
+if (month=="May") {number<-31+28+31+30}
+if (month=="Jun") {number<-31+28+31+30+31}
+if (month=="Jul") {number<-31+28+31+30+31+30}
+if (month=="Aug") {number<-31+28+31+30+31+30+31}
+if (month=="Sep") {number<-31+28+31+30+31+30+31+31}
+if (month=="Oct") {number<-31+28+31+30+31+30+31+31+30}
+if (month=="Nov") {number<-31+28+31+30+31+30+31+31+30+31}
+if (month=="Dec") {number<-31+28+31+30+31+30+31+31+30+31+30}
+return(number)
+}
+seconds<-0
+for (i in 1:length(dates)) {
+#as.POSIXcl is not working on PCs. Done by hand:
+seconds[[i]]<-month(dates[[i]][[2]])*24*60*60+
+as.numeric(dates[[i]][[3]])*24*60*60+
+sum(as.numeric(unlist(strsplit(x=dates[[i]][[4]], split=":")))*c(60*60,60,1))+
+(as.numeric(dates[[i]][[5]])-2000)*365*24*60*60
+}
+exif.new$seconds<-seconds
+old
+setwd(old)
+exif.new
+#1.4 Rodar a fun??o para converter as imagens
+photos<-procphotos(auto = T,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = TRUE,
+roi = imagej,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+setwd("~/Felipe/Duvida Natalia")
+dir()
+imagej<-read.csv("Results.csv")
+head(imagej)
+#1.2.Carregar o pacote Argiope.
+library(Argiope)
+#1.4 Rodar a fun??o para converter as imagens
+photos<-procphotos(auto = T,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = TRUE,
+roi = imagej,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+files<-"IMG_1826.CR2"
+getwd()
+setwd("~/Felipe/Duvida Natalia")
+#files<-"IMG_1826.CR2"
+old<-getwd()
+Argiope.path<-file.path(find.package("Argiope"),"dcraw")
+setwd(file.path(find.package("Argiope")))
+old
+old
+old
+old
+files[[1]]
+shQuote(file.path(old,files[[1]]))
+shQuote(file.path(old,files[[1]]))
+shQuote(file.path(old,files[[1]]))
+shQuote(file.path(old,files[[1]]))
+shQuote(file.path(old,files[[1]]))
+shQuote(file.path(old,files[[1]]))
+shQuote(file.path(old,files[[1]]))
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[1]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[1]]))), stdout = TRUE)
+length(files)
+exif.new<-data.frame(matrix(ncol=length(exif),nrow=length(files)))
+exif.new
+for (k in 1:length(files)) {
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[k]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[k]]))), stdout = TRUE)
+for(i in 1:length(exif)) {
+size<-length(unlist(strsplit(exif[[i]],split=": ")))
+if(size>1) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))[[2]]
+names(exif.new)[[i]]<-paste(unlist(strsplit(exif[[i]],split=": "))[[1]])
+}
+if(size==1 & size) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))
+}
+if(size==0 & size) {
+}
+}
+}
+dates<-exif.new$Timestamp
+dates<-strsplit(x=dates, split=" ")
+dates
+dates<-exif.new$Timestamp
+dates
+dates<-strsplit(x=dates, split=" ")
+dates
+setwd("~/Felipe/Duvida Natalia")
+dir()
+imagej<-read.csv("Results.csv")
+head(imagej)
+#1.4 Rodar a fun??o para converter as imagens
+file.name<-imagej$Image
+file.name<-sub(pattern=".jpg", replacement=paste(ext), x=file.name,
+ignore.case = TRUE)
+file.name<-sub(pattern=".jpg", replacement=paste("CR2"), x=file.name,
+ignore.case = TRUE)
+file.name
+file.name<-sub(pattern=".jpg", replacement=paste(".CR2"), x=file.name,
+ignore.case = TRUE)
+file.name
+#1.4 Rodar a fun??o para converter as imagens
+file.name<-imagej$Image
+file.name<-sub(pattern=".jpg", replacement=paste(".CR2"), x=file.name,
+ignore.case = TRUE)
+file.name
+groups<-find_group(file.name=file.name, interval = 3)
+groups
+roi[groups$groups==levels(groups$groups)[[j]],]
+roi<-imagej
+roi.temp<-roi[groups$groups==levels(groups$groups)[[j]],]
+j=1
+roi.temp<-roi[groups$groups==levels(groups$groups)[[j]],]
+roi.temp
+length(levels(groups$groups))
+gc(reset = TRUE, verbose=FALSE)
+img<-list()
+scale<-list()
+max<-list()
+images<-groups$Filename[groups$groups==levels(groups$groups)[[j]]]
+roi.temp<-roi[groups$groups==levels(groups$groups)[[j]],]
+roi.temp
+groups.temp<-groups[groups$groups==levels(groups$groups)[[j]],]
+groups.temp
+length(images)
+i=1
+#read image
+#"-w -o 0 -q 0 -4 -T"
+#-w camera white balance
+#-o colour space raw
+#-q interpolation quality
+#-W do not brighten image
+#- 4 16bit
+#-T write tiff
+tags<-dcraw.tags(images[[i]])
+images[[i]]
+images
+images<-groups$Filename[groups$groups==levels(groups$groups)[[j]]]
+images
+groups$Filename
+groups
+files<-"IMG_1826.CR2"
+old<-getwd()
+Argiope.path<-file.path(find.package("Argiope"),"dcraw")
+setwd(file.path(find.package("Argiope")))
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[1]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[1]]))), stdout = TRUE)
+exif.new<-data.frame(matrix(ncol=length(exif),nrow=length(files)))
+for (k in 1:length(files)) {
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[k]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[k]]))), stdout = TRUE)
+for(i in 1:length(exif)) {
+size<-length(unlist(strsplit(exif[[i]],split=": ")))
+if(size>1) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))[[2]]
+names(exif.new)[[i]]<-paste(unlist(strsplit(exif[[i]],split=": "))[[1]])
+}
+if(size==1 & size) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))
+}
+if(size==0 & size) {
+}
+}
+}
+dates<-exif.new$Timestamp
+dates<-strsplit(x=dates, split=" ")
+month<-function(month) {
+#vai errar o dia em ano bissexto
+if (month=="Jan") {number<-0}
+if (month=="Feb") {number<-31}
+if (month=="Mar") {number<-31+28}
+if (month=="Apr") {number<-31+28+31}
+if (month=="May") {number<-31+28+31+30}
+if (month=="Jun") {number<-31+28+31+30+31}
+if (month=="Jul") {number<-31+28+31+30+31+30}
+if (month=="Aug") {number<-31+28+31+30+31+30+31}
+if (month=="Sep") {number<-31+28+31+30+31+30+31+31}
+if (month=="Oct") {number<-31+28+31+30+31+30+31+31+30}
+if (month=="Nov") {number<-31+28+31+30+31+30+31+31+30+31}
+if (month=="Dec") {number<-31+28+31+30+31+30+31+31+30+31+30}
+return(number)
+}
+seconds<-0
+for (i in 1:length(dates)) {
+#as.POSIXcl is not working on PCs. Done by hand:
+seconds[[i]]<-month(dates[[i]][[2]])*24*60*60+
+as.numeric(dates[[i]][[3]])*24*60*60+
+sum(as.numeric(unlist(strsplit(x=dates[[i]][[4]], split=":")))*c(60*60,60,1))+
+(as.numeric(dates[[i]][[5]])-2000)*365*24*60*60
+}
+setwd("~/Felipe/Duvida Natalia")
+#files<-"IMG_1826.CR2"
+old<-getwd()
+Argiope.path<-file.path(find.package("Argiope"),"dcraw")
+setwd(file.path(find.package("Argiope")))
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[1]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[1]]))), stdout = TRUE)
+exif.new<-data.frame(matrix(ncol=length(exif),nrow=length(files)))
+for (k in 1:length(files)) {
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[k]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[k]]))), stdout = TRUE)
+for(i in 1:length(exif)) {
+size<-length(unlist(strsplit(exif[[i]],split=": ")))
+if(size>1) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))[[2]]
+names(exif.new)[[i]]<-paste(unlist(strsplit(exif[[i]],split=": "))[[1]])
+}
+if(size==1 & size) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))
+}
+if(size==0 & size) {
+}
+}
+}
+dates<-exif.new$Timestamp
+dates<-strsplit(x=dates, split=" ")
+month<-function(month) {
+#vai errar o dia em ano bissexto
+if (month=="Jan") {number<-0}
+if (month=="Feb") {number<-31}
+if (month=="Mar") {number<-31+28}
+if (month=="Apr") {number<-31+28+31}
+if (month=="May") {number<-31+28+31+30}
+if (month=="Jun") {number<-31+28+31+30+31}
+if (month=="Jul") {number<-31+28+31+30+31+30}
+if (month=="Aug") {number<-31+28+31+30+31+30+31}
+if (month=="Sep") {number<-31+28+31+30+31+30+31+31}
+if (month=="Oct") {number<-31+28+31+30+31+30+31+31+30}
+if (month=="Nov") {number<-31+28+31+30+31+30+31+31+30+31}
+if (month=="Dec") {number<-31+28+31+30+31+30+31+31+30+31+30}
+return(number)
+}
+seconds<-0
+for (i in 1:length(dates)) {
+#as.POSIXcl is not working on PCs. Done by hand:
+seconds[[i]]<-month(dates[[i]][[2]])*24*60*60+
+as.numeric(dates[[i]][[3]])*24*60*60+
+sum(as.numeric(unlist(strsplit(x=dates[[i]][[4]], split=":")))*c(60*60,60,1))+
+(as.numeric(dates[[i]][[5]])-2000)*365*24*60*60
+}
+exif.new$seconds<-seconds
+setwd(old)
+exif.new
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[1]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[1]]))), stdout = TRUE)
+exif.new<-data.frame(matrix(ncol=length(exif),nrow=length(files)))
+exif.new
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[1]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[1]]))), stdout = TRUE)
+exif
+#exif<-system2(command=Argiope.path, args=paste("-i -v", files[[k]]), stdout = TRUE)
+exif<-system2(command="dcraw", args=paste("-i -v", shQuote(file.path(old,files[[k]]))), stdout = TRUE)
+for(i in 1:length(exif)) {
+size<-length(unlist(strsplit(exif[[i]],split=": ")))
+if(size>1) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))[[2]]
+names(exif.new)[[i]]<-paste(unlist(strsplit(exif[[i]],split=": "))[[1]])
+}
+if(size==1 & size) {
+exif.new[k,i]<-unlist(strsplit(exif[[i]],split=": "))
+}
+if(size==0 & size) {
+}
+}
+exif.new
+strsplit(exif.new$Filename, "\\")
+strsplit(exif.new$Filename, "\\.")
+strsplit(exif.new$Filename, "\\")
+strsplit(exif.new$Filename, "\")
+strsplit
+?strsplit
+basename(exif.new$Filename)
+exif.new
+exif.new$Filename<-basename(c(exif.new$Filename,exif.new$Filename))
+c(exif.new$Filename,exif.new$Filename)
+basename(c(exif.new$Filename,exif.new$Filename))
+exif.new$Filename<-basename(exif.new$Filename)
+exif.new
+setwd("~/Felipe/Duvida Natalia")
+setwd("~/Felipe/Duvida Natalia")
+dir()
+imagej<-read.csv("Results.csv")
+head(imagej)
+#1.2.Carregar o pacote Argiope.
+library(Argiope)
+#1.4 Rodar a fun??o para converter as imagens
+photos<-procphotos(auto = T,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = TRUE,
+roi = imagej,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+#1.5 Os resultados foram salvos na pasta results
+dir("results")
+#1.6 (Opcional) Verificar se a convers?o foi feita da maneira correta
+plot.procphotos(photos)
+#1.6 (Opcional) Verificar se a convers?o foi feita da maneira correta
+plot.procphotos(photos)
+photos<-procphotos(auto = T,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 80,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+#1.6 (Opcional) Verificar se a convers?o foi feita da maneira correta
+plot.procphotos(photos)
+install.packages("rmarkdown", lib="C:/R/R-3.6.2/library")
+library(Argiope)
+unlink('vignettes/Argiope-vignette_cache', recursive = TRUE)
+library(Argiope)
+library(Argiope)
+setwd("~/Felipe/Duvida Natalia")
+dir()
+imagej<-read.csv("Results.csv")
+head(imagej)
+#1.2.Carregar o pacote Argiope.
+library(Argiope)
+photos<-procphotos(auto = F,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 80,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+photos<-procphotos(auto = F,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 80,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+#1.5 Os resultados foram salvos na pasta results
+dir("results")
+#1.6 (Opcional) Verificar se a convers?o foi feita da maneira correta
+plot.procphotos(photos)
+photos<-procphotos(auto = F,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 120,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+#1.5 Os resultados foram salvos na pasta results
+dir("results")
+#1.6 (Opcional) Verificar se a convers?o foi feita da maneira correta
+plot.procphotos(photos)
+photos<-procphotos(auto = F,
+interval = 3,
+limit = 0.92,
+ext = ".CR2",
+template = FALSE,
+X = c(1842,1824,1806,1788,1776,1758),
+Y = c(933,1392,1842,2316,2784,3240),
+Size = 10,
+roi = NULL,
+bug = FALSE,
+bug.rotate = FALSE,
+RvaluesR = c(98.35, 65.22, 41.42, 23.17, 9.97, 2.17),
+RvaluesG = c(97.89, 66.19, 42.45, 23.69, 10.48, 2.22),
+RvaluesB = c(95.98, 66.87, 43.30, 24.42, 11.13, 2.26),
+whichRvalues = c(2:6),
+save = FALSE)
+#1.5 Os resultados foram salvos na pasta results
+dir("results")
+#1.6 (Opcional) Verificar se a convers?o foi feita da maneira correta
+plot.procphotos(photos)
